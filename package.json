@@ -1,0 +1,56 @@
+{
+	"name": "api-feedback-form",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"lint": "eslint --color --fix --ext .ts .",
+		"start": "webpack -w --color",
+		"test": "jest",
+		"build": "npm audit fix && webpack --env.buildEnv=prod --color",
+		"package": "sam package --template-file template.yaml --s3-bucket com.zerotoheroes.artifact --output-template-file template.packaged.yaml",
+		"deploy": "sam deploy --template-file template.packaged.yaml --stack-name FeedbackStack --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset",
+		"clean": "rm -rf -v dist/*"
+	},
+	"repository": {},
+	"author": "",
+	"license": "MIT",
+	"private": true,
+	"dependencies": {},
+	"devDependencies": {
+		"@types/aws-lambda": "^8.10.31",
+		"@types/chai": "^4.1.7",
+		"@types/jest": "^24.0.17",
+		"@types/node": "^12.7.1",
+		"@typescript-eslint/eslint-plugin": "^1.13.0",
+		"@typescript-eslint/parser": "^1.13.0",
+		"aws-sdk": "^2.205.0",
+		"eslint": "^6.1.0",
+		"eslint-config-prettier": "6.0.0",
+		"eslint-loader": "2.2.1",
+		"eslint-plugin-prettier": "3.1.0",
+		"jest": "24.8.0",
+		"prettier": "1.18.2",
+		"ts-jest": "^24.0.2",
+		"ts-loader": "^6.0.4",
+		"ts-node": "^8.3.0",
+		"typescript": "^3.5.3",
+		"uglifyjs-webpack-plugin": "2.2.0",
+		"webpack": "^4.39.1",
+		"webpack-cli": "^3.3.6",
+		"yaml-cfn": "0.2.2"
+	},
+	"jest": {
+		"transform": {
+			"^.+\\.tsx?$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"jsx",
+			"json",
+			"node"
+		]
+	}
+}

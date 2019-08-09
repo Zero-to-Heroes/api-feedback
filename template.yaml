@@ -1,0 +1,41 @@
+# https://github.com/awslabs/serverless-application-model/blob/develop/versions/2016-10-31.md
+# Indentation needs to be set with spaces, because YAML...
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API endpoint to receive feedback from the Firestone feedback form
+
+Globals:
+    Api:
+        # API Gateway regional endpoints
+        EndpointConfiguration: EDGE
+        Cors:
+            AllowMethods: "'*'"
+            AllowHeaders: "'*'"
+            AllowOrigin: "'*'"
+    Function:
+        Runtime: nodejs10.x
+        Timeout: 180
+        Tracing: Active
+
+Resources:
+    ProcessFeedbackFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: feedback.default
+            CodeUri: ./dist/feedback
+            Policies:
+                - AWSLambdaVPCAccessExecutionRole
+                - AmazonSESFullAccess
+            Events:
+                GetResource:
+                    Type: Api
+                    Properties:
+                        Path: /{proxy+}
+                        Method: any
+
+Outputs:
+    ProcessFeedbackApi:
+        Description: URL to post feedback form results
+        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/feedback'
+        Export:
+            Name: ProcessFeedbackApi
