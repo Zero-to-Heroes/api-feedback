@@ -10,6 +10,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	console.log('feedbackEvent', feedbackEvent);
 	const body = `
 	From: ${feedbackEvent.email}
+	User: ${feedbackEvent.user}
 	
 	Message: ${feedbackEvent.message}
 	
@@ -56,6 +57,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 
 interface FeedbackEvent {
 	readonly email: string;
+	readonly user: string;
 	readonly message: string;
 	readonly appLogsKey: string;
 	readonly gameLogsKey: string;
