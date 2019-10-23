@@ -8,7 +8,7 @@
 		"test": "jest",
 		"build": "npm audit fix && webpack --env.buildEnv=prod --color",
 		"package": "sam package --template-file template.yaml --s3-bucket com.zerotoheroes.artifact --output-template-file template.packaged.yaml",
-		"deploy": "sam deploy --template-file template.packaged.yaml --stack-name FeedbackStack --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset",
+		"deploy": "sam deploy --template-file template.packaged.yaml --stack-name FeedbackStack --capabilities CAPABILITY_IAM",
 		"clean": "rm -rf -v dist/*"
 	},
 	"repository": {},

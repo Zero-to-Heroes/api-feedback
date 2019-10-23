@@ -18,7 +18,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	Game logs: ${feedbackEvent.gameLogsKey}`;
 	const params = {
 		Destination: {
-			ToAddresses: ['sebastien.tromp@gmail.com'],
+			ToAddresses: ['sebastien+firestone-feedback@tromp.fr', 'ilil.ben.shalom@overwolf.com'],
 		},
 		Message: {
 			Subject: {
