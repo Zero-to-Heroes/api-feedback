@@ -15,7 +15,6 @@ Globals:
     Function:
         Runtime: nodejs10.x
         Timeout: 180
-        Tracing: Active
 
 Resources:
     ProcessFeedbackFunction:
