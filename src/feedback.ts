@@ -5,9 +5,9 @@ import { SES } from 'aws-sdk';
 // the more traditional callback-style handler.
 // [1]: https://aws.amazon.com/blogs/compute/node-js-8-10-runtime-now-available-in-aws-lambda/
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
-	console.log('input body', event.body);
+	// console.log('input body', event.body);
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
-	console.log('feedbackEvent', feedbackEvent);
+	// console.log('feedbackEvent', feedbackEvent);
 	const body = `
 	From: ${feedbackEvent.email}
 	User: ${feedbackEvent.user}
@@ -34,7 +34,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		},
 		Source: 'seb@zerotoheroes.com',
 	};
-	console.log('sending email', params);
+	// console.log('sending email', params);
 	try {
 		const result = await new SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
 		const response = {
@@ -42,7 +42,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			isBase64Encoded: false,
 			body: JSON.stringify({ message: 'ok', result: result }),
 		};
-		console.log('sending back success reponse', response);
+		// console.log('sending back success reponse', response);
 		return response;
 	} catch (e) {
 		const response = {
