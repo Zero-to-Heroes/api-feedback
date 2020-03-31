@@ -17,9 +17,9 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	
 	App logs: ${feedbackEvent.appLogsKey}
 	Game logs: ${feedbackEvent.gameLogsKey}`;
-	const params = {
+	const params: SES.Types.SendEmailRequest = {
 		Destination: {
-			ToAddresses: ['sebastien+firestone-feedback@tromp.fr', 'ilil.ben.shalom@overwolf.com', 'sergio.rezvani@overwolf.com'],
+			ToAddresses: ['sebastien+firestone-feedback@tromp.fr', 'sergio.rezvani@overwolf.com'],
 		},
 		Message: {
 			Subject: {
@@ -32,9 +32,10 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 					Data: body,
 				},
 			},
+			ReplyToAddresses: [feedbackEvent.email],
 		},
 		Source: 'seb@zerotoheroes.com',
-	};
+	} as SES.Types.SendEmailRequest;
 	// console.log('sending email', params);
 	try {
 		const result = await new SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
