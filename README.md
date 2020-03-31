@@ -8,7 +8,6 @@ sam local generate-event apigateway aws-proxy --body '{ "email": "emailhop", "me
 
 ```
 npm run build && npm run package && npm run deploy
-npm run build; npm run package; npm run deploy
 ```
 
 # Reference
