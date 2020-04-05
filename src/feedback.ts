@@ -32,7 +32,6 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 					Data: body,
 				},
 			},
-			ReplyToAddresses: [feedbackEvent.email],
 		},
 		Source: 'seb@zerotoheroes.com',
 	} as SES.Types.SendEmailRequest;
