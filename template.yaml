@@ -25,6 +25,8 @@ Resources:
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
                 - AmazonSESFullAccess
+            Tags:
+                LambdaName: api-feedback
             Events:
                 GetResource:
                     Type: Api
