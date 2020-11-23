@@ -14,7 +14,6 @@ Globals:
             AllowOrigin: "'*'"
     Function:
         Runtime: nodejs10.x
-        Timeout: 180
 
 Resources:
     ProcessFeedbackFunction:
@@ -22,10 +21,18 @@ Resources:
         Properties:
             Handler: feedback.default
             CodeUri: ./dist/feedback
+            Timeout: 5
+            # https://stackoverflow.com/questions/39144688/aws-lambda-invoke-not-calling-another-lambda-function-node-js
+            VpcConfig:
+                SecurityGroupIds:
+                    - sg-0ed63616362bf1a30
+                SubnetIds:
+                    - subnet-0b730ca9af74a95dd
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
+                - SecretsManagerReadWrite
                 - AmazonSESFullAccess
-                - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
+                # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: api-feedback
             Events:
