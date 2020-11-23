@@ -23,11 +23,12 @@ Resources:
             CodeUri: ./dist/feedback
             Timeout: 5
             # https://stackoverflow.com/questions/39144688/aws-lambda-invoke-not-calling-another-lambda-function-node-js
-            VpcConfig:
-                SecurityGroupIds:
-                    - sg-0ed63616362bf1a30
-                SubnetIds:
-                    - subnet-0b730ca9af74a95dd
+            # VpcConfig:
+            #     SecurityGroupIds:
+            #         - sg-0ed63616362bf1a30
+            #     SubnetIds:
+            #         - subnet-0b36da5c19637a351
+            #         - subnet-0b730ca9af74a95dd
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
                 - SecretsManagerReadWrite
