@@ -1,6 +1,5 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
-import { getConnection } from './rds-bgs';
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -10,9 +9,9 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 	console.log('feedbackEvent', feedbackEvent);
 
-	const mysql = await getConnection();
-	const result = await mysql.query('SELECT * FROM bgs_hero_stats LIMIT 1');
-	console.log('result', result);
+	// const mysql = await getConnection();
+	// const result = await mysql.query('SELECT * FROM bgs_hero_stats LIMIT 1');
+	// console.log('result', result);
 
 	const body = `
 	From: ${feedbackEvent.email}
