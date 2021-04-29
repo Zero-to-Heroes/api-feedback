@@ -41,25 +41,15 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		Source: 'seb@zerotoheroes.com',
 	} as SES.Types.SendEmailRequest;
 	console.log('sending email', params);
-	try {
-		const result = await new SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
-		console.log('sent email', result);
-		const response = {
-			statusCode: 200,
-			isBase64Encoded: false,
-			body: JSON.stringify({ message: 'ok', result: result }),
-		};
-		// console.log('sending back success reponse', response);
-		return response;
-	} catch (e) {
-		const response = {
-			statusCode: 500,
-			isBase64Encoded: false,
-			body: JSON.stringify({ message: 'not ok', exception: e }),
-		};
-		console.log('sending back error reponse', response);
-		return response;
-	}
+	const result = await new SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
+	console.log('sent email', result);
+	const response = {
+		statusCode: 200,
+		isBase64Encoded: false,
+		body: JSON.stringify({ message: 'ok', result: result }),
+	};
+	// console.log('sending back success reponse', response);
+	return response;
 };
 
 interface FeedbackEvent {
