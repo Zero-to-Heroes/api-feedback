@@ -13,7 +13,7 @@ Globals:
             AllowHeaders: "'*'"
             AllowOrigin: "'*'"
     Function:
-        Runtime: nodejs10.x
+        Runtime: nodejs12.x
 
 Resources:
     ProcessFeedbackFunction:
