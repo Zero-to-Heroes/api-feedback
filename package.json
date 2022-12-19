@@ -21,39 +21,21 @@
 	},
 	"devDependencies": {
 		"@types/aws-lambda": "^8.10.31",
-		"@types/chai": "^4.1.7",
-		"@types/jest": "^24.0.17",
 		"@types/node": "^12.7.1",
-		"@typescript-eslint/eslint-plugin": "^1.13.0",
-		"@typescript-eslint/parser": "^1.13.0",
-		"aws-sdk": "^2.797.0",
-		"eslint": "^6.1.0",
-		"eslint-config-prettier": "6.0.0",
-		"eslint-loader": "2.2.1",
-		"eslint-plugin-prettier": "3.1.0",
-		"jest": "24.8.0",
-		"prettier": "1.18.2",
-		"ts-jest": "^24.0.2",
-		"ts-loader": "^6.0.4",
-		"ts-node": "^8.3.0",
-		"typescript": "^3.5.3",
+		"@typescript-eslint/eslint-plugin": "^2.1.0",
+		"@typescript-eslint/parser": "^2.1.0",
+		"aws-sdk": "^2.1278.0",
+		"eslint": "^6.6.0",
+		"eslint-config-prettier": "^6.5.0",
+		"eslint-loader": "^3.0.2",
+		"eslint-plugin-prettier": "^3.1.1",
+		"prettier": "^1.19.1",
+		"ts-loader": "^6.2.1",
+		"ts-node": "^8.5.0",
+		"typescript": "^3.7.2",
 		"uglifyjs-webpack-plugin": "2.2.0",
 		"webpack": "^4.39.1",
 		"webpack-cli": "^3.3.6",
 		"yaml-cfn": "0.2.2"
-	},
-	"jest": {
-		"transform": {
-			"^.+\\.tsx?$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"jsx",
-			"json",
-			"node"
-		]
 	}
 }

@@ -18,7 +18,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	Game logs: https://s3-us-west-2.amazonaws.com/com.zerotoheroes.support/${feedbackEvent.gameLogsKey}`;
 	const params: SES.Types.SendEmailRequest = {
 		Destination: {
-			ToAddresses: ['support@firestoneapp.com', 'sergio.rezvani@overwolf.com'],
+			ToAddresses: ['support@firestoneapp.com'],
 		},
 		Message: {
 			Subject: {
@@ -32,7 +32,8 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 				},
 			},
 		},
-		Source: 'seb@zerotoheroes.com',
+		Source: 'seb@firestoneapp.com',
+		ReplyToAddresses: [feedbackEvent.email ?? 'seb@firestoneapp.com'],
 	} as SES.Types.SendEmailRequest;
 	const result = await new SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
 	const response = {

@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "ES2020",
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"emitDecoratorMetadata": true,
@@ -15,7 +15,7 @@
 		"resolveJsonModule": true,
 		"inlineSources": true,
 		"sourceRoot": "/",
-		"lib": ["dom", "es2015"],
+		"lib": ["dom", "ES2020"],
 		"baseUrl": ".",
 		"typeRoots": ["node_modules/@types"],
 		"types": ["node"],
