@@ -46,6 +46,7 @@ Resources:
         Type: AWS::Serverless::Function
         Properties:
             Handler: feedback.default
+            Runtime: nodejs16.x
             CodeUri: ./dist/feedback
             Timeout: 5
             Policies:
