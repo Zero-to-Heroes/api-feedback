@@ -33,10 +33,3 @@ Resources:
             AutoPublishAlias: live
             FunctionUrlConfig:
                 AuthType: NONE
-
-Outputs:
-    ProcessFeedbackApi:
-        Description: URL to post feedback form results
-        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/feedback'
-        Export:
-            Name: ProcessFeedbackApi
