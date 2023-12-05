@@ -11,6 +11,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	From: ${feedbackEvent.email}
 	User: ${feedbackEvent.user}
 	Version: ${feedbackEvent.version}
+	SubPlan: ${feedbackEvent.subscription}
 	
 	Message: ${feedbackEvent.message}
 	
@@ -51,4 +52,5 @@ interface FeedbackEvent {
 	readonly appLogsKey: string;
 	readonly gameLogsKey: string;
 	readonly version: string;
+	readonly subscription: string;
 }
