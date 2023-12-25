@@ -7,6 +7,11 @@ import { SES } from 'aws-sdk';
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
+	// Temporarily disable it
+	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
+		return;
+	}
+
 	const body = `
 	From: ${feedbackEvent.email}
 	User: ${feedbackEvent.user}
