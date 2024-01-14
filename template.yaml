@@ -13,11 +13,14 @@ Resources:
             Runtime: nodejs18.x
             CodeUri: ./dist/feedback
             Timeout: 15
+            Layers:
+                - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:14"
             Policies:
                 - AWSLambdaVPCAccessExecutionRole
                 - SecretsManagerReadWrite
                 - AmazonSESFullAccess
                 - AWSLambda_FullAccess
+                - arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy
                 # - arn:aws:iam::478062583808:policy/CloudWatchPolicyForLambda # See https://stackoverflow.com/questions/51166504/disable-cloudwatch-to-monitor-logs-for-lambda-function
             Tags:
                 LambdaName: api-feedback-2

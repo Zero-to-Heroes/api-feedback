@@ -2,7 +2,8 @@ import { getConnection } from '@firestone-hs/aws-lambda-utils';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 
-const minRequiredVersionForBgsFeedback = '13.2.13';
+const minRequiredVersionForBgsFeedback = '13.2.19';
+const stopBgsEmails = false;
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -26,7 +27,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			parseInt(currentVersionParts[2]);
 		const minVersionNumber =
 			parseInt(minVersionParts[0]) * 10000 + parseInt(minVersionParts[1]) * 100 + parseInt(minVersionParts[2]);
-		if (currentVersionNumber < minVersionNumber) {
+		if (stopBgsEmails || currentVersionNumber < minVersionNumber) {
 			const response = {
 				statusCode: 200,
 				isBase64Encoded: false,
@@ -83,15 +84,19 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
 	try {
 		const date = new Date().toISOString().slice(0, 10);
 		const existingEntry: readonly any[] = await mysql.query(
-			`SELECT * FROM analytics_bgs_terminal_failures WHERE date = ?`,
-			[date],
+			`SELECT * FROM analytics_bgs_terminal_failures WHERE date = ? and version = ?`,
+			[date, feedbackEvent.version],
 		);
 		if (existingEntry && existingEntry.length > 0) {
-			await mysql.query(`UPDATE analytics_bgs_terminal_failures SET failures = failures + 1 WHERE date = ?`, [
-				date,
-			]);
+			await mysql.query(
+				`UPDATE analytics_bgs_terminal_failures SET failures = failures + 1 WHERE date = ? and version = ?`,
+				[date, feedbackEvent.version],
+			);
 		} else {
-			await mysql.query(`INSERT INTO analytics_bgs_terminal_failures(date, failures) VALUES (?, 1)`, [date]);
+			await mysql.query(`INSERT INTO analytics_bgs_terminal_failures(date, version, failures) VALUES (?, ?, 1)`, [
+				date,
+				feedbackEvent.version,
+			]);
 		}
 	} finally {
 		await mysql.end();
