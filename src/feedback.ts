@@ -2,8 +2,8 @@ import { getConnection } from '@firestone-hs/aws-lambda-utils';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 
-const minRequiredVersionForBgsFeedback = '13.2.19';
-const stopBgsEmails = false;
+const minRequiredVersionForBgsFeedback = '13.3.9';
+const stopBgsEmails = true;
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -11,6 +11,7 @@ const stopBgsEmails = false;
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
+	let reviewLink = '';
 	// Temporarily disable it
 	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
 		await handleBgsSimTerminalFailure(feedbackEvent);
@@ -35,6 +36,11 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			};
 			return response;
 		}
+
+		const messageInfo = JSON.parse(feedbackEvent.message);
+		reviewLink = `Review: http://replays.firestoneapp.com/?reviewId=${messageInfo.reviewId}&turn=${
+			2 * messageInfo.currentTurn + 1
+		}&action=0`;
 	}
 
 	const body = `
@@ -43,6 +49,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	Version: ${feedbackEvent.version}
 	SubPlan: ${feedbackEvent.subscription}
 	
+	${reviewLink}
 	Message: ${feedbackEvent.message}
 	
 	App logs: https://s3-us-west-2.amazonaws.com/com.zerotoheroes.support/${feedbackEvent.appLogsKey}
