@@ -1,9 +1,10 @@
 import { getConnection } from '@firestone-hs/aws-lambda-utils';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
+import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.3.9';
-const stopBgsEmails = true;
+const minRequiredVersionForBgsFeedback = '13.6.0';
+const stopBgsEmails = false;
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -16,6 +17,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
 		await handleBgsSimTerminalFailure(feedbackEvent);
 
+		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
 		const currentVersion = feedbackEvent.version;
 		// If the current version is lower than the minimum required version, we don't send the email
 		// Versions are in the format Major.minor.patch
@@ -28,7 +30,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			parseInt(currentVersionParts[2]);
 		const minVersionNumber =
 			parseInt(minVersionParts[0]) * 10000 + parseInt(minVersionParts[1]) * 100 + parseInt(minVersionParts[2]);
-		if (stopBgsEmails || currentVersionNumber < minVersionNumber) {
+		if (!isSupportedForReport || stopBgsEmails || currentVersionNumber < minVersionNumber) {
 			const response = {
 				statusCode: 200,
 				isBase64Encoded: false,
@@ -110,7 +112,7 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
 	}
 };
 
-interface FeedbackEvent {
+export interface FeedbackEvent {
 	readonly email: string;
 	readonly user: string;
 	readonly message: string;

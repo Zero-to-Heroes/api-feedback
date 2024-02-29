@@ -15,6 +15,7 @@
 	"private": true,
 	"dependencies": {
 		"@firestone-hs/aws-lambda-utils": "^0.0.57",
+		"@firestone-hs/reference-data": "^2.0.3",
 		"aws-sdk": "^2.1040.0",
 		"mysql": "^2.18.1",
 		"serverless-mysql": "^1.5.4"
