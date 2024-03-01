@@ -30,7 +30,23 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			parseInt(currentVersionParts[2]);
 		const minVersionNumber =
 			parseInt(minVersionParts[0]) * 10000 + parseInt(minVersionParts[1]) * 100 + parseInt(minVersionParts[2]);
-		if (!isSupportedForReport || stopBgsEmails || currentVersionNumber < minVersionNumber) {
+
+		const messageInfo = JSON.parse(feedbackEvent.message);
+		reviewLink = `Review: http://replays.firestoneapp.com/?reviewId=${messageInfo.reviewId}&turn=${
+			2 * messageInfo.currentTurn + 1
+		}&action=0`;
+
+		if (!isSupportedForReport) {
+			console.debug('board not supported', reviewLink);
+			const response = {
+				statusCode: 200,
+				isBase64Encoded: false,
+				body: JSON.stringify({ message: 'ok', result: 'unsupported-boards' }),
+			};
+			return response;
+		}
+		if (stopBgsEmails || currentVersionNumber < minVersionNumber) {
+			console.debug('not notifying', stopBgsEmails, currentVersionNumber, minVersionNumber);
 			const response = {
 				statusCode: 200,
 				isBase64Encoded: false,
@@ -38,11 +54,6 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			};
 			return response;
 		}
-
-		const messageInfo = JSON.parse(feedbackEvent.message);
-		reviewLink = `Review: http://replays.firestoneapp.com/?reviewId=${messageInfo.reviewId}&turn=${
-			2 * messageInfo.currentTurn + 1
-		}&action=0`;
 	}
 
 	const body = `

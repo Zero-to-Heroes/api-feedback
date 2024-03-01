@@ -13,5 +13,13 @@ const isSupportedForPlayer = (player: any): boolean => {
 	const isStormpikesAndScally =
 		heroPower === CardIds.VanndarStormpike_LeadTheStormpikes &&
 		board.some((e) => e.cardId === CardIds.Scallywag_BGS_061 || e.cardId === CardIds.Scallywag_TB_BaconUps_141);
+	if (isStormpikesAndScally) {
+		console.log(
+			'unsupported',
+			heroPower,
+			board.map((e) => e.cardId),
+			player,
+		);
+	}
 	return !isStormpikesAndScally;
 };
