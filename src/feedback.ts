@@ -1,10 +1,11 @@
 import { getConnection } from '@firestone-hs/aws-lambda-utils';
+import { GameType } from '@firestone-hs/reference-data';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.6.0';
-const stopBgsEmails = false;
+const minRequiredVersionForBgsFeedback = '13.7.6';
+const stopBgsEmails = true;
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -101,22 +102,23 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
 	// If no entry exists for the date, create it
 	// If the entry exists, increment the value
 	const mysql = await getConnection();
+	const message = JSON.parse(feedbackEvent.message);
 	try {
 		const date = new Date().toISOString().slice(0, 10);
 		const existingEntry: readonly any[] = await mysql.query(
-			`SELECT * FROM analytics_bgs_terminal_failures WHERE date = ? and version = ?`,
-			[date, feedbackEvent.version],
+			`SELECT * FROM analytics_bgs_terminal_failures WHERE date = ? AND gameType = ? AND version = ?`,
+			[date, message.gameType ?? -1, feedbackEvent.version],
 		);
 		if (existingEntry && existingEntry.length > 0) {
 			await mysql.query(
-				`UPDATE analytics_bgs_terminal_failures SET failures = failures + 1 WHERE date = ? and version = ?`,
-				[date, feedbackEvent.version],
+				`UPDATE analytics_bgs_terminal_failures SET failures = failures + 1 WHERE date = ? AND gameType = ? AND version = ?`,
+				[date, message.gameType ?? -1, feedbackEvent.version],
 			);
 		} else {
-			await mysql.query(`INSERT INTO analytics_bgs_terminal_failures(date, version, failures) VALUES (?, ?, 1)`, [
-				date,
-				feedbackEvent.version,
-			]);
+			await mysql.query(
+				`INSERT INTO analytics_bgs_terminal_failures(date, gameType, version, failures) VALUES (?, ?, ?, 1)`,
+				[date, message.gameType ?? -1, feedbackEvent.version],
+			);
 		}
 	} finally {
 		await mysql.end();
@@ -129,6 +131,7 @@ export interface FeedbackEvent {
 	readonly message: string;
 	readonly appLogsKey: string;
 	readonly gameLogsKey: string;
+	readonly gameType: GameType;
 	readonly version: string;
 	readonly subscription: string;
 }
