@@ -4,8 +4,9 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.7.6';
+const minRequiredVersionForBgsFeedback = '13.11.2';
 const stopBgsEmails = true;
+const supportedGameModes = [GameType.GT_BATTLEGROUNDS];
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -46,7 +47,11 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			};
 			return response;
 		}
-		if (stopBgsEmails || currentVersionNumber < minVersionNumber) {
+		if (
+			stopBgsEmails ||
+			currentVersionNumber < minVersionNumber ||
+			!supportedGameModes.includes(+messageInfo.gameType)
+		) {
 			console.debug('not notifying', stopBgsEmails, currentVersionNumber, minVersionNumber);
 			const response = {
 				statusCode: 200,
