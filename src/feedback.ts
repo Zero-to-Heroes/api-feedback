@@ -4,9 +4,11 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.11.2';
+const minRequiredVersionForBgsFeedback = '13.11.8';
 const stopBgsEmails = true;
 const supportedGameModes = [GameType.GT_BATTLEGROUNDS];
+const maxReports = 15;
+let currentReports = 0;
 
 // This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
 // the more traditional callback-style handler.
@@ -15,8 +17,10 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
 	let reviewLink = '';
-	// Temporarily disable it
-	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
+	if (
+		feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com' ||
+		feedbackEvent.email === 'automated-email-bg-sim-crash@firestoneapp.com'
+	) {
 		await handleBgsSimTerminalFailure(feedbackEvent);
 
 		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
@@ -48,6 +52,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			return response;
 		}
 		if (
+			currentReports >= maxReports ||
 			stopBgsEmails ||
 			currentVersionNumber < minVersionNumber ||
 			!supportedGameModes.includes(+messageInfo.gameType)
@@ -60,6 +65,8 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 			};
 			return response;
 		}
+
+		currentReports++;
 	}
 
 	const body = `
@@ -107,8 +114,8 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
 	// If no entry exists for the date, create it
 	// If the entry exists, increment the value
 	const mysql = await getConnection();
-	const message = JSON.parse(feedbackEvent.message);
 	try {
+		const message = JSON.parse(feedbackEvent.message);
 		const date = new Date().toISOString().slice(0, 10);
 		const existingEntry: readonly any[] = await mysql.query(
 			`SELECT * FROM analytics_bgs_terminal_failures WHERE date = ? AND gameType = ? AND version = ?`,
