@@ -13,7 +13,17 @@ const isSupportedForPlayer = (player: any): boolean => {
 	const isStormpikesAndScally =
 		heroPower === CardIds.VanndarStormpike_LeadTheStormpikes &&
 		board.some((e) => e.cardId === CardIds.Scallywag_BGS_061 || e.cardId === CardIds.Scallywag_TB_BaconUps_141);
-	if (isStormpikesAndScally) {
+	// HS Bug
+	const isGlimGuardiandAndWhelpSmugglerBug =
+		board.some((e) => e.cardId === CardIds.GlimGuardian_BG29_888 || e.cardId === CardIds.GlimGuardian_BG29_888_G) &&
+		board.some((e) => e.cardId === CardIds.WhelpSmuggler_BG21_013 || e.cardId === CardIds.WhelpSmuggler_BG21_013_G);
+	// HS Bug
+	const isEmbraceYourRageIntoThousandthPaperDrake =
+		player.heroPowerId === CardIds.EmbraceYourRage &&
+		[CardIds.ThousandthPaperDrake_BG29_810, CardIds.ThousandthPaperDrake_BG29_810_G].includes(player.heroPowerInfo);
+	const supported =
+		!isStormpikesAndScally && !isGlimGuardiandAndWhelpSmugglerBug && !isEmbraceYourRageIntoThousandthPaperDrake;
+	if (!supported) {
 		console.log(
 			'unsupported',
 			heroPower,
@@ -21,5 +31,5 @@ const isSupportedForPlayer = (player: any): boolean => {
 			player,
 		);
 	}
-	return !isStormpikesAndScally;
+	return supported;
 };
