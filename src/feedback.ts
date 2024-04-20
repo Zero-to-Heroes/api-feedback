@@ -4,16 +4,17 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.11.10';
+const minRequiredVersionForBgsFeedback = '13.11.11';
 const stopBgsEmails = true;
 const supportedGameModes = [GameType.GT_BATTLEGROUNDS];
 const maxReports = 10;
 let currentReports = 0;
 
-// This example demonstrates a NodeJS 8.10 async handler[1], however of course you could use
-// the more traditional callback-style handler.
-// [1]: https://aws.amazon.com/blogs/compute/node-js-8-10-runtime-now-available-in-aws-lambda/
+// const allCards = new AllCardsService();
+
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
+	// await allCards.initializeCardsDb();
+
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
 	let reviewLink = '';

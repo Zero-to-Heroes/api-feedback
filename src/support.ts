@@ -1,4 +1,5 @@
 import { CardIds } from '@firestone-hs/reference-data';
+import { START_OF_COMBAT_CARD_IDS } from './card-data';
 import { FeedbackEvent } from './feedback';
 
 export const isSupportedForBgsReport = (feedbackEvent: FeedbackEvent): boolean => {
@@ -18,11 +19,11 @@ const isSupportedForPlayer = (player: any): boolean => {
 		board.some((e) => e.cardId === CardIds.GlimGuardian_BG29_888 || e.cardId === CardIds.GlimGuardian_BG29_888_G) &&
 		board.some((e) => e.cardId === CardIds.WhelpSmuggler_BG21_013 || e.cardId === CardIds.WhelpSmuggler_BG21_013_G);
 	// HS Bug
-	const isEmbraceYourRageIntoThousandthPaperDrake =
+	const isEmbraceYourRageIntoStartOfCombat =
 		player.heroPowerId === CardIds.EmbraceYourRage &&
-		[CardIds.ThousandthPaperDrake_BG29_810, CardIds.ThousandthPaperDrake_BG29_810_G].includes(player.heroPowerInfo);
+		START_OF_COMBAT_CARD_IDS.includes(player.heroPowerInfo);
 	const supported =
-		!isStormpikesAndScally && !isGlimGuardiandAndWhelpSmugglerBug && !isEmbraceYourRageIntoThousandthPaperDrake;
+		!isStormpikesAndScally && !isGlimGuardiandAndWhelpSmugglerBug && !isEmbraceYourRageIntoStartOfCombat;
 	if (!supported) {
 		console.log(
 			'unsupported',
