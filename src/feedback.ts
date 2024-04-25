@@ -4,8 +4,8 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.11.11';
-const stopBgsEmails = true;
+const minRequiredVersionForBgsFeedback = '13.11.17';
+const stopBgsEmails = false;
 const supportedGameModes = [GameType.GT_BATTLEGROUNDS];
 const maxReports = 10;
 let currentReports = 0;
@@ -14,17 +14,17 @@ let currentReports = 0;
 
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
 	// await allCards.initializeCardsDb();
+	if (!event.body) {
+		return;
+	}
 
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
 	let reviewLink = '';
-	if (
-		feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com' ||
-		feedbackEvent.email === 'automated-email-bg-sim-crash@firestoneapp.com'
-	) {
-		await handleBgsSimTerminalFailure(feedbackEvent);
-
+	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
 		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
+		await handleBgsSimTerminalFailure(feedbackEvent, isSupportedForReport);
+
 		const currentVersion = feedbackEvent.version;
 		// If the current version is lower than the minimum required version, we don't send the email
 		// Versions are in the format Major.minor.patch
@@ -110,7 +110,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	return response;
 };
 
-const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
+const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent, isSupportedForReport: boolean) => {
 	// Increment the `analytics_bgs_terminal_failures.failures` field in the DB for the `date` key (date is YYYY-MM-DD)
 	// If no entry exists for the date, create it
 	// If the entry exists, increment the value
@@ -124,12 +124,18 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent) => {
 		);
 		if (existingEntry && existingEntry.length > 0) {
 			await mysql.query(
-				`UPDATE analytics_bgs_terminal_failures SET failures = failures + 1 WHERE date = ? AND gameType = ? AND version = ?`,
+				`
+					UPDATE analytics_bgs_terminal_failures 
+					SET failures = failures + 1, supportedForReport = supportedForReport + ${isSupportedForReport ? 1 : 0}
+					WHERE date = ? AND gameType = ? AND version = ?
+				`,
 				[date, message.gameType ?? -1, feedbackEvent.version],
 			);
 		} else {
 			await mysql.query(
-				`INSERT INTO analytics_bgs_terminal_failures(date, gameType, version, failures) VALUES (?, ?, ?, 1)`,
+				`INSERT INTO analytics_bgs_terminal_failures
+				(date, gameType, version, failures, supportedForReport) 
+				VALUES (?, ?, ?, 1, ${isSupportedForReport ? 1 : 0})`,
 				[date, message.gameType ?? -1, feedbackEvent.version],
 			);
 		}
