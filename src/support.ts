@@ -11,19 +11,38 @@ export const isSupportedForBgsReport = (feedbackEvent: FeedbackEvent): boolean =
 const isSupportedForPlayer = (player: any): boolean => {
 	const heroPower = player.heroPowerId;
 	const board = player.board;
+
 	const isStormpikesAndScally =
 		heroPower === CardIds.VanndarStormpike_LeadTheStormpikes &&
 		board.some((e) => e.cardId === CardIds.Scallywag_BGS_061 || e.cardId === CardIds.Scallywag_TB_BaconUps_141);
+	const isRapidReanimationIntoStartOfCombat =
+		heroPower === CardIds.TeronGorefiend_RapidReanimation &&
+		board.some(
+			(m) =>
+				START_OF_COMBAT_CARD_IDS.includes(m.cardId) &&
+				m.enchantments?.some((e) => e.cardId === CardIds.RapidReanimation_ImpendingDeathEnchantment),
+		);
+
 	// HS Bug
 	const isGlimGuardiandAndWhelpSmugglerBug =
 		board.some((e) => e.cardId === CardIds.GlimGuardian_BG29_888 || e.cardId === CardIds.GlimGuardian_BG29_888_G) &&
 		board.some((e) => e.cardId === CardIds.WhelpSmuggler_BG21_013 || e.cardId === CardIds.WhelpSmuggler_BG21_013_G);
 	// HS Bug
+	const isDefiantShipwrightAndAllWilBurn =
+		heroPower === CardIds.AllWillBurn &&
+		board.some(
+			(e) => e.cardId === CardIds.DefiantShipwright_BG21_018 || e.cardId === CardIds.DefiantShipwright_BG21_018_G,
+		);
+	// HS Bug
 	const isEmbraceYourRageIntoStartOfCombat =
-		player.heroPowerId === CardIds.EmbraceYourRage &&
-		START_OF_COMBAT_CARD_IDS.includes(player.heroPowerInfo);
+		heroPower === CardIds.EmbraceYourRage && START_OF_COMBAT_CARD_IDS.includes(player.heroPowerInfo);
+
 	const supported =
-		!isStormpikesAndScally && !isGlimGuardiandAndWhelpSmugglerBug && !isEmbraceYourRageIntoStartOfCombat;
+		!isStormpikesAndScally &&
+		!isGlimGuardiandAndWhelpSmugglerBug &&
+		!isEmbraceYourRageIntoStartOfCombat &&
+		!isRapidReanimationIntoStartOfCombat &&
+		!isDefiantShipwrightAndAllWilBurn;
 	if (!supported) {
 		console.log(
 			'unsupported',
