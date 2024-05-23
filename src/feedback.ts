@@ -4,9 +4,9 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.11.21';
+const minRequiredVersionForBgsFeedback = '13.13.3';
 const stopBgsEmails = true;
-const supportedGameModes = [GameType.GT_BATTLEGROUNDS];
+const supportedGameModes = [GameType.GT_BATTLEGROUNDS, GameType.GT_BATTLEGROUNDS_DUO];
 const maxReports = 10;
 let currentReports = 0;
 
