@@ -8,9 +8,10 @@ export const isSupportedForBgsReport = (feedbackEvent: FeedbackEvent): boolean =
 	return isSupportedForPlayer(battleInfo.playerBoard) && isSupportedForPlayer(battleInfo.opponentBoard);
 };
 
-const isSupportedForPlayer = (player: any): boolean => {
+const isSupportedForPlayer = (playerInfo: any): boolean => {
+	const player = playerInfo.player;
 	const heroPower = player.heroPowerId;
-	const board = player.board;
+	const board = playerInfo.board;
 
 	const isStormpikesAndScally =
 		heroPower === CardIds.VanndarStormpike_LeadTheStormpikes &&

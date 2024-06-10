@@ -4,9 +4,12 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.13.3';
-const stopBgsEmails = true;
-const supportedGameModes = [GameType.GT_BATTLEGROUNDS, GameType.GT_BATTLEGROUNDS_DUO];
+const minRequiredVersionForBgsFeedback = '13.15.9';
+const stopBgsEmails = false;
+const supportedGameModes = [
+	GameType.GT_BATTLEGROUNDS,
+	// GameType.GT_BATTLEGROUNDS_DUO
+];
 const maxReports = 10;
 let currentReports = 0;
 
@@ -21,22 +24,12 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
 
 	let reviewLink = '';
+
+	const isMinVersionValid = isMinVersion(feedbackEvent.version);
+
 	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
 		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
 		await handleBgsSimTerminalFailure(feedbackEvent, isSupportedForReport);
-
-		const currentVersion = feedbackEvent.version;
-		// If the current version is lower than the minimum required version, we don't send the email
-		// Versions are in the format Major.minor.patch
-		const currentVersionParts = currentVersion.split('.');
-		const minVersionParts = minRequiredVersionForBgsFeedback.split('.');
-		// Compare versions
-		const currentVersionNumber =
-			parseInt(currentVersionParts[0]) * 10000 +
-			parseInt(currentVersionParts[1]) * 100 +
-			parseInt(currentVersionParts[2]);
-		const minVersionNumber =
-			parseInt(minVersionParts[0]) * 10000 + parseInt(minVersionParts[1]) * 100 + parseInt(minVersionParts[2]);
 
 		const messageInfo = JSON.parse(feedbackEvent.message);
 		reviewLink = `Review: http://replays.firestoneapp.com/?reviewId=${messageInfo.reviewId}&turn=${
@@ -55,10 +48,10 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		if (
 			currentReports >= maxReports ||
 			stopBgsEmails ||
-			currentVersionNumber < minVersionNumber ||
+			!isMinVersionValid ||
 			!supportedGameModes.includes(+messageInfo.gameType)
 		) {
-			console.debug('not notifying', stopBgsEmails, currentVersionNumber, minVersionNumber);
+			// console.debug('not notifying', stopBgsEmails);
 			const response = {
 				statusCode: 200,
 				isBase64Encoded: false,
@@ -68,6 +61,9 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		}
 
 		currentReports++;
+	}
+	if (!isMinVersionValid && feedbackEvent.email === 'automated-email-bg-sim-crash@firestoneapp.com') {
+		return;
 	}
 
 	const body = `
@@ -108,6 +104,23 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		body: JSON.stringify({ message: 'ok', result: result }),
 	};
 	return response;
+};
+
+const isMinVersion = (version: string): boolean => {
+	const currentVersion = version;
+	// If the current version is lower than the minimum required version, we don't send the email
+	// Versions are in the format Major.minor.patch
+	const currentVersionParts = currentVersion.split('.');
+	const minVersionParts = minRequiredVersionForBgsFeedback.split('.');
+	// Compare versions
+	const currentVersionNumber =
+		parseInt(currentVersionParts[0]) * 10000 +
+		parseInt(currentVersionParts[1]) * 100 +
+		parseInt(currentVersionParts[2]);
+	const minVersionNumber =
+		parseInt(minVersionParts[0]) * 10000 + parseInt(minVersionParts[1]) * 100 + parseInt(minVersionParts[2]);
+
+	return currentVersionNumber >= minVersionNumber;
 };
 
 const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent, isSupportedForReport: boolean) => {
