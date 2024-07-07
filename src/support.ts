@@ -23,27 +23,37 @@ const isSupportedForPlayer = (playerInfo: any): boolean => {
 				START_OF_COMBAT_CARD_IDS.includes(m.cardId) &&
 				m.enchantments?.some((e) => e.cardId === CardIds.RapidReanimation_ImpendingDeathEnchantment),
 		);
+	// Maybe not needed, as it's explicitly flagged as "not supported" in Firestone now
+	const isZilliaxAssembledEnchantment = board.some((e) =>
+		e.enchantments?.some(
+			(enchantment) => enchantment.cardId === CardIds.ZilliaxAssembled_ZilliaxAssembledEnchantment_BG29_100_Ge,
+		),
+	);
 
 	// HS Bug
 	const isGlimGuardiandAndWhelpSmugglerBug =
 		board.some((e) => e.cardId === CardIds.GlimGuardian_BG29_888 || e.cardId === CardIds.GlimGuardian_BG29_888_G) &&
 		board.some((e) => e.cardId === CardIds.WhelpSmuggler_BG21_013 || e.cardId === CardIds.WhelpSmuggler_BG21_013_G);
 	// HS Bug
-	const isDefiantShipwrightAndAllWilBurn =
+	const isDefiantShipwrightAndAllWilBurnBug =
 		heroPower === CardIds.AllWillBurn &&
 		board.some(
 			(e) => e.cardId === CardIds.DefiantShipwright_BG21_018 || e.cardId === CardIds.DefiantShipwright_BG21_018_G,
 		);
 	// HS Bug
-	const isEmbraceYourRageIntoStartOfCombat =
+	const isEmbraceYourRageIntoStartOfCombatBug =
 		heroPower === CardIds.EmbraceYourRage && START_OF_COMBAT_CARD_IDS.includes(player.heroPowerInfo);
+	// HS Bug
+	const isPackTacticsBug = player.secrets?.some((s) => s.cardId === CardIds.PackTactics_TB_Bacon_Secrets_15);
 
 	const supported =
 		!isStormpikesAndScally &&
-		!isGlimGuardiandAndWhelpSmugglerBug &&
-		!isEmbraceYourRageIntoStartOfCombat &&
+		!isZilliaxAssembledEnchantment &&
 		!isRapidReanimationIntoStartOfCombat &&
-		!isDefiantShipwrightAndAllWilBurn;
+		!isGlimGuardiandAndWhelpSmugglerBug &&
+		!isEmbraceYourRageIntoStartOfCombatBug &&
+		!isPackTacticsBug &&
+		!isDefiantShipwrightAndAllWilBurnBug;
 	if (!supported) {
 		console.log(
 			'unsupported',

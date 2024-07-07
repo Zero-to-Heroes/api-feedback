@@ -4,7 +4,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.15.9';
+const minRequiredVersionForBgsFeedback = '13.18.6';
 const stopBgsEmails = false;
 const supportedGameModes = [
 	GameType.GT_BATTLEGROUNDS,
@@ -22,6 +22,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	}
 
 	const feedbackEvent: FeedbackEvent = JSON.parse(event.body);
+	console.debug('processing feedback', feedbackEvent);
 
 	let reviewLink = '';
 
@@ -66,6 +67,13 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		return;
 	}
 
+	let message: any = '';
+	try {
+		message = JSON.parse(feedbackEvent.message);
+	} catch (e) {
+		//
+	}
+
 	const body = `
 	From: ${feedbackEvent.email}
 	User: ${feedbackEvent.user}
@@ -73,7 +81,11 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	SubPlan: ${feedbackEvent.subscription}
 	
 	${reviewLink}
-	Message: ${feedbackEvent.message}
+	Message: ${message?.message}
+	BattleInfo: 
+	${!!message?.battleInfo ? JSON.stringify(message?.battleInfo) : ''}
+
+	FullMessage: ${feedbackEvent.message}
 	
 	App logs: https://s3-us-west-2.amazonaws.com/com.zerotoheroes.support/${feedbackEvent.appLogsKey}
 	Game logs: https://s3-us-west-2.amazonaws.com/com.zerotoheroes.support/${feedbackEvent.gameLogsKey}`;
