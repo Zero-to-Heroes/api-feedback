@@ -44,7 +44,7 @@ const isSupportedForPlayer = (playerInfo: any): boolean => {
 	const isEmbraceYourRageIntoStartOfCombatBug =
 		heroPower === CardIds.EmbraceYourRage && START_OF_COMBAT_CARD_IDS.includes(player.heroPowerInfo);
 	// HS Bug
-	const isPackTacticsBug = player.secrets?.some((s) => s.cardId === CardIds.PackTactics_TB_Bacon_Secrets_15);
+	const isPackTacticsBug = playerInfo.secrets?.some((s) => s.cardId === CardIds.PackTactics_TB_Bacon_Secrets_15);
 
 	const supported =
 		!isStormpikesAndScally &&
