@@ -4,8 +4,8 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.19.11';
-const stopBgsEmails = true;
+const minRequiredVersionForBgsFeedback = '13.21.3';
+const stopBgsEmails = false;
 const supportedGameModes = [
 	GameType.GT_BATTLEGROUNDS,
 	// GameType.GT_BATTLEGROUNDS_DUO
@@ -33,7 +33,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 		await handleBgsSimTerminalFailure(feedbackEvent, isSupportedForReport);
 
 		const messageInfo = JSON.parse(feedbackEvent.message);
-		reviewLink = `Review: http://replays.firestoneapp.com/?reviewId=${messageInfo.reviewId}&turn=${
+		reviewLink = `Review: https://replays.firestoneapp.com/?debug=true&reviewId=${messageInfo.reviewId}&turn=${
 			2 * messageInfo.currentTurn + 1
 		}&action=0`;
 
