@@ -13,6 +13,7 @@ Resources:
             Runtime: nodejs18.x
             CodeUri: ./dist/feedback
             Timeout: 15
+            MemorySize: 512            
             # Layers:
             #     - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:14"
             Policies:

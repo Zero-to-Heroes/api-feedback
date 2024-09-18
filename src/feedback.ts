@@ -1,11 +1,11 @@
 import { getConnection } from '@firestone-hs/aws-lambda-utils';
-import { GameType } from '@firestone-hs/reference-data';
+import { AllCardsService, GameType } from '@firestone-hs/reference-data';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.21.3';
-const stopBgsEmails = false;
+const minRequiredVersionForBgsFeedback = '13.22.0';
+const stopBgsEmails = true;
 const supportedGameModes = [
 	GameType.GT_BATTLEGROUNDS,
 	// GameType.GT_BATTLEGROUNDS_DUO
@@ -13,10 +13,9 @@ const supportedGameModes = [
 const maxReports = 10;
 let currentReports = 0;
 
-// const allCards = new AllCardsService();
+export const allCards = new AllCardsService();
 
 export default async (event: APIGatewayEvent, context, callback): Promise<any> => {
-	// await allCards.initializeCardsDb();
 	if (!event.body) {
 		return;
 	}
@@ -29,6 +28,7 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	const isMinVersionValid = isMinVersion(feedbackEvent.version);
 
 	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
+		await allCards.initializeCardsDb();
 		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
 		await handleBgsSimTerminalFailure(feedbackEvent, isSupportedForReport);
 
