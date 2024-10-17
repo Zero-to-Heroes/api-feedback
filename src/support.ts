@@ -19,11 +19,20 @@ const isSupportedFaceOff = (battleInfo: BgsBattleInfo): boolean => {
 	const isScallywagVsScarletSkull = isScallywagVsScarletSkullBoard(battleInfo);
 	const isLightningInvocationVsMisfitDragonlingHsBug = isLightningInvocationVsMisfitDragonlingHsBugBoard(battleInfo);
 	const isFragrantPhylacteryAndBronzeTimepieceHsBug = isFragrantPhylacteryAndBronzeTimepieceHsBugBoard(battleInfo);
+	const isTwinLanternHsBug = isTwinLanternHsBugBoard(battleInfo);
 	return (
 		!isScallywagVsRisenRider &&
 		!isScallywagVsScarletSkull &&
 		!isLightningInvocationVsMisfitDragonlingHsBug &&
-		!isFragrantPhylacteryAndBronzeTimepieceHsBug
+		!isFragrantPhylacteryAndBronzeTimepieceHsBug &&
+		!isTwinLanternHsBug
+	);
+};
+
+const isTwinLanternHsBugBoard = (battleInfo: BgsBattleInfo): boolean => {
+	return (
+		battleInfo.playerBoard.player.trinkets?.some((t) => t.cardId === CardIds.TwinSkyLanterns_BG30_MagicItem_822) ||
+		battleInfo.opponentBoard.player.trinkets?.some((t) => t.cardId === CardIds.TwinSkyLanterns_BG30_MagicItem_822)
 	);
 };
 

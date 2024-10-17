@@ -1,15 +1,13 @@
-import { getConnection } from '@firestone-hs/aws-lambda-utils';
+import { getConnectionProxy } from '@firestone-hs/aws-lambda-utils';
 import { AllCardsService, GameType } from '@firestone-hs/reference-data';
 import { APIGatewayEvent } from 'aws-lambda';
 import { SES } from 'aws-sdk';
+import { ServerlessMysql } from 'serverless-mysql';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '13.22.0';
+const minRequiredVersionForBgsFeedback = '13.30.4';
 const stopBgsEmails = true;
-const supportedGameModes = [
-	GameType.GT_BATTLEGROUNDS,
-	// GameType.GT_BATTLEGROUNDS_DUO
-];
+const supportedGameModes = [GameType.GT_BATTLEGROUNDS, GameType.GT_BATTLEGROUNDS_DUO];
 const maxReports = 10;
 let currentReports = 0;
 
@@ -28,7 +26,9 @@ export default async (event: APIGatewayEvent, context, callback): Promise<any> =
 	const isMinVersionValid = isMinVersion(feedbackEvent.version);
 
 	if (feedbackEvent.email === 'automated-email-bg-sim@firestoneapp.com') {
+		// console.debug('initializing cards db');
 		await allCards.initializeCardsDb();
+		// console.debug('initialized cards db');
 		const isSupportedForReport = isSupportedForBgsReport(feedbackEvent);
 		await handleBgsSimTerminalFailure(feedbackEvent, isSupportedForReport);
 
@@ -139,8 +139,11 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent, isSuppo
 	// Increment the `analytics_bgs_terminal_failures.failures` field in the DB for the `date` key (date is YYYY-MM-DD)
 	// If no entry exists for the date, create it
 	// If the entry exists, increment the value
-	const mysql = await getConnection();
+	let mysql: ServerlessMysql;
 	try {
+		// console.debug('trying to get connection 9');
+		mysql = await getConnectionProxy();
+		// console.debug('got connection');
 		const message = JSON.parse(feedbackEvent.message);
 		const date = new Date().toISOString().slice(0, 10);
 		const existingEntry: readonly any[] = await mysql.query(
@@ -164,8 +167,13 @@ const handleBgsSimTerminalFailure = async (feedbackEvent: FeedbackEvent, isSuppo
 				[date, message.gameType ?? -1, feedbackEvent.version],
 			);
 		}
+		// console.debug('updated info in db');
+	} catch (e) {
+		console.error('could not update analytics_bgs_terminal_failures', e.message, e);
 	} finally {
-		await mysql.end();
+		if (mysql) {
+			await mysql.end();
+		}
 	}
 };
 
