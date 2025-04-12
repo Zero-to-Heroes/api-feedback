@@ -15,7 +15,7 @@
 	"private": true,
 	"dependencies": {
 		"@firestone-hs/aws-lambda-utils": "^1.0.7",
-		"@firestone-hs/reference-data": "^2.0.73",
+		"@firestone-hs/reference-data": "^2.0.108",
 		"@firestone-hs/simulate-bgs-battle": "^1.1.480",
 		"aws-sdk": "^2.1691.0",
 		"mysql": "^2.18.1",

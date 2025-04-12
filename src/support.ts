@@ -17,11 +17,14 @@ export const isSupportedForBgsReport = (feedbackEvent: FeedbackEvent): boolean =
 const isSupportedFaceOff = (battleInfo: BgsBattleInfo): boolean => {
 	const isScallywagVsRisenRider = isScallywagVsRisenRiderBoard(battleInfo);
 	const isScallywagVsScarletSkull = isScallywagVsScarletSkullBoard(battleInfo);
+	// Not really infinite, but there are issues with multiple attackImmediately minions
+	const inInfiniteScally = isInfiniteScally(battleInfo);
 	const isLightningInvocationVsMisfitDragonlingHsBug = isLightningInvocationVsMisfitDragonlingHsBugBoard(battleInfo);
 	const isFragrantPhylacteryAndBronzeTimepieceHsBug = isFragrantPhylacteryAndBronzeTimepieceHsBugBoard(battleInfo);
 	const isTwinLanternHsBug = isTwinLanternHsBugBoard(battleInfo);
 	return (
 		!isScallywagVsRisenRider &&
+		!inInfiniteScally &&
 		!isScallywagVsScarletSkull &&
 		!isLightningInvocationVsMisfitDragonlingHsBug &&
 		!isFragrantPhylacteryAndBronzeTimepieceHsBug &&
@@ -73,14 +76,39 @@ const isScallywagVsScarletSkullBoard = (battleInfo: BgsBattleInfo): boolean => {
 	);
 };
 
+const isInfiniteScally = (battleInfo: BgsBattleInfo): boolean => {
+	return (
+		(hasScallywag(battleInfo.playerBoard.board) &&
+			(hasTitus(battleInfo.playerBoard.board) || hasBonerender(battleInfo.playerBoard.board))) ||
+		(hasScallywag(battleInfo.opponentBoard.board) &&
+			(hasTitus(battleInfo.opponentBoard.board) || hasBonerender(battleInfo.opponentBoard.board)))
+	);
+};
+
 const hasMisfitDragonling = (board: BoardEntity[]): boolean => {
 	return board.some(
 		(e) => e.cardId === CardIds.MisfitDragonling_BG29_814 || e.cardId === CardIds.MisfitDragonling_BG29_814_G,
 	);
 };
 
+const hasBonerender = (board: BoardEntity[]): boolean => {
+	return board.some(
+		(e) => e.cardId === CardIds.CaptainBonerender_BG31_840 || e.cardId === CardIds.CaptainBonerender_BG31_840_G,
+	);
+};
+const hasTitus = (board: BoardEntity[]): boolean => {
+	return board.some(
+		(e) => e.cardId === CardIds.TitusRivendare_BG25_354 || e.cardId === CardIds.TitusRivendare_BG25_354_G,
+	);
+};
 const hasScallywag = (board: BoardEntity[]): boolean => {
-	return board.some((e) => e.cardId === CardIds.Scallywag_BGS_061 || e.cardId === CardIds.Scallywag_TB_BaconUps_141);
+	return board.some(
+		(e) =>
+			e.cardId === CardIds.Scallywag_BGS_061 ||
+			e.cardId === CardIds.Scallywag_TB_BaconUps_141 ||
+			e.cardId === CardIds.RapscallionRecruiter_BG26_018 ||
+			e.cardId === CardIds.RapscallionRecruiter_BG26_018_G,
+	);
 };
 const hasRisenRider = (board: BoardEntity[]): boolean => {
 	return board.some((e) => e.cardId === CardIds.RisenRider_BG25_001 || e.cardId === CardIds.RisenRider_BG25_001_G);
