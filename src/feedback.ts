@@ -5,7 +5,7 @@ import { SES } from 'aws-sdk';
 import { ServerlessMysql } from 'serverless-mysql';
 import { isSupportedForBgsReport } from './support';
 
-const minRequiredVersionForBgsFeedback = '15.4.3';
+const minRequiredVersionForBgsFeedback = '15.8.10';
 const stopBgsEmails = true;
 const supportedGameModes = [
 	GameType.GT_BATTLEGROUNDS,
